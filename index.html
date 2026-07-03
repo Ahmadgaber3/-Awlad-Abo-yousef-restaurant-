@@ -105,7 +105,6 @@
         .price-txt { font-size: 0.82rem; font-weight: 700; margin-right: 3px; }
         .action-container { display: flex; flex-direction: column; align-items: center; position: relative; width: 85px; }
         .add-btn { background: var(--accent); color: #f5efe6; border: none; padding: 5px 0; border-radius: 12px; font-size: 0.78rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 800; box-shadow: 0 3px 8px rgba(140, 98, 57, 0.2); width: 100%; white-space: nowrap; transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease; }
-        .add-btn:active { transform: scale(0.95); }
         .added-notice { position: absolute; bottom: 120%; left: 0; width: 100%; background: var(--success); color: white; font-size: 0.62rem; font-weight: 800; padding: 2px 0; border-radius: 6px; opacity: 0; transform: translateY(3px); transition: all 0.2s ease; pointer-events: none; text-align: center; white-space: nowrap; box-shadow: 0 2px 6px rgba(46, 204, 113, 0.2); }
         .added-notice.show { opacity: 1; transform: translateY(0); }
         .fly-item { position: fixed; z-index: 9999; pointer-events: none; width: 30px; height: 30px; background: transparent; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 0.7s cubic-bezier(0.25, 1, 0.5, 1); }
@@ -130,18 +129,10 @@
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; justify-content: center; align-items: flex-end; backdrop-filter: blur(4px); }
         .modal-content { background: var(--white); width: 100%; max-width: 500px; padding: 25px; border-radius: 30px 30px 0 0; max-height: 85vh; overflow-y: auto; color: var(--main-text); box-shadow: 0 -5px 25px rgba(0,0,0,0.1); }
         .cart-item-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(140, 98, 57, 0.03); border-radius: 18px; margin-bottom: 10px; }
-        body.dark-mode .cart-item-card { background: rgba(255, 255, 255, 0.03); }
-        .cart-item-img { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; }
-        .cart-item-info { flex: 1; }
-        .cart-item-name { font-weight: 700; font-size: 0.95rem; color: var(--main-text); }
-        .cart-item-size { font-size: 0.75rem; color: var(--desc-text); display: block; }
-        .cart-item-price { color: var(--main-text); font-weight: 800; font-size: 0.85rem; display: block; margin-top: 2px; }
-        .remove-btn { color: var(--accent); font-weight: 800; font-size: 0.8rem; cursor: pointer; padding: 5px; }
         .order-type-selector { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; }
         .type-btn { flex: 1; padding: 12px; border-radius: 14px; background: var(--bg); color: var(--main-text); border: 1.5px solid transparent; font-weight: 700; font-size: 0.9rem; cursor: pointer; text-align: center; }
         .type-btn.active { background: var(--accent); color: #f5efe6; box-shadow: 0 3px 8px rgba(140, 98, 57, 0.15); }
         .user-fields input { background: var(--bg); border: 1px solid transparent; padding: 14px; border-radius: 14px; width: 100%; margin-bottom: 10px; color: var(--main-text); text-align: right; font-size: 0.95rem; }
-        .user-fields input:focus { border-color: var(--accent); outline: none; }
         #uAddrContainer { transition: all 0.3s ease; max-height: 100px; overflow: hidden; opacity: 1; }
         #uAddrContainer.hidden { max-height: 0; opacity: 0; margin-bottom: 0; pointer-events: none; }
         .submit-btn { background: var(--accent); color: #f5efe6; border: none; padding: 16px; border-radius: 18px; width: 100%; font-weight: 800; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(140, 98, 57, 0.2); }
@@ -238,6 +229,17 @@
         let currentTotal = 0; 
         let currentOrderType = 'delivery';
 
+        // دالة التحميل المسبق للصور "Preloading"
+        function preloadAllImages() {
+            const imagesToLoad = menuData.map(item => `${IMAGES_PATH}${item.name}.jpg`);
+            return Promise.all(imagesToLoad.map(src => new Promise(res => { 
+                const img = new Image(); 
+                img.src = src; 
+                img.onload = res; 
+                img.onerror = res; 
+            })));
+        }
+
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             document.getElementById('themeBtn').innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
@@ -289,44 +291,22 @@
         }
 
         async function loadMenu() {
-            const animationDuration = 2200; let dataLoaded = false;
+            const animationDuration = 2000;
             fetch(`${csvUrl}&t=${new Date().getTime()}`, { cache: "no-store" })
-                .then(res => { if (!res.ok) throw new Error(); return res.text(); })
+                .then(res => res.text())
                 .then(data => {
                     const rows = data.split(/\r?\n/).slice(1);
                     menuData = rows.map((row, idx) => {
-                        if(!row.trim()) return null;
-                        const col = parseCSVLine(row); const name = col[1]; 
-                        if(!name || name === "الصنف") return null;
-                        return { 
-                            id: idx, category: col[0] || "أخرى", name: name, 
-                            prices: {
-                                "كبير": col[3] || "", 
-                                "وسط": col[4] || "", 
-                                "صغير": col[5] || "",       
-                                "كيلو": col[6] || "", 
-                                "3/4 كيلو": col[7] || "", 
-                                "نص كيلو": col[8] || "",  
-                                "ثلت كيلو": col[9] || "", 
-                                "ربع كيلو": col[10] || "", 
-                                "عادي": col[12] || ""    
-                            }, desc: col[2] || ""           
-                        };
+                        const col = parseCSVLine(row); if(!col[1]) return null;
+                        return { id: idx, category: col[0], name: col[1], prices: { "كبير": col[3], "وسط": col[4], "صغير": col[5], "كيلو": col[6], "3/4 كيلو": col[7], "نص كيلو": col[8], "ثلت كيلو": col[9], "ربع كيلو": col[10], "عادي": col[12] }, desc: col[2] };
                     }).filter(Boolean);
-                    dataLoaded = true;
-                }).catch(e => { console.error(e); dataLoaded = true; });
-
-            runLoadingAnimation(animationDuration, () => {
-                const checkInterval = setInterval(() => {
-                    if (dataLoaded) {
-                        clearInterval(checkInterval);
-                        if(menuData.length > 0) renderNav();
-                        else document.getElementById('menuList').innerHTML = '<p style="text-align:center; padding:20px;">عذراً، لا توجد بيانات متاحة حالياً.</p>';
-                        const splash = document.getElementById('splash-screen');
-                        if(splash) splash.classList.add('splash-hidden');
-                    }
-                }, 50);
-            });
+                    
+                    runLoadingAnimation(animationDuration, async () => {
+                        await preloadAllImages(); // تحميل الصور مسبقاً
+                        renderNav();
+                        document.getElementById('splash-screen').classList.add('splash-hidden');
+                    });
+                });
         }
 
         function renderNav() {
@@ -425,16 +405,7 @@
             currentTotal = 0; const container = document.getElementById('cartItemsList');
             container.innerHTML = cart.map((item, idx) => {
                 currentTotal += parseInt(item.price, 10) || 0;
-                return `
-                <div class="cart-item-card">
-                    <img src="${item.img}" class="cart-item-img" onerror="this.onerror=null; this.src='${IMAGES_PATH}default.jpg';">
-                    <div class="cart-item-info">
-                        <span class="cart-item-name">${item.name}</span>
-                        <span class="cart-item-size">الحجم: ${item.size}</span>
-                        <span class="cart-item-price">${item.price} جنيه</span>
-                    </div>
-                    <span class="remove-btn" onclick="removeFromCart(${idx})">حذف</span>
-                </div>`;
+                return `<div class="cart-item-card"><img src="${item.img}" class="cart-item-img" onerror="this.onerror=null; this.src='${IMAGES_PATH}default.jpg';"><div class="cart-item-info"><span class="cart-item-name">${item.name}</span><span class="cart-item-size">الحجم: ${item.size}</span><span class="cart-item-price">${item.price} جنيه</span></div><span class="remove-btn" onclick="removeFromCart(${idx})">حذف</span></div>`
             }).join('');
             document.getElementById('totalAmount').innerText = `${currentTotal} جنيه`;
         }
@@ -453,13 +424,11 @@
             }
             
             let msg = `*طلب جديد - مطعم وجزارة أبو يوسف*\n──────────────\n👤 *الاسم:* ${n}\n📱 *الموبايل:* ${p}\n`;
-            
             if(currentOrderType === 'delivery') {
                 msg += `📍 *نوع الطلب:* دليفري 🛵\n🏠 *العنوان:* ${a}\n`;
             } else {
                 msg += `📍 *نوع الطلب:* تيك أواي 🛍️ (الاستلام من المطعم)\n`;
             }
-            
             msg += `──────────────\n📦 *الطلبات:*\n`;
             const summary = {}; cart.forEach(item => { const key = `${item.name} (${item.size})`; summary[key] = (summary[key] || 0) + 1; });
             for (const [itemKey, qty] of Object.entries(summary)) { msg += `• ${itemKey} × ${qty}\n`; }

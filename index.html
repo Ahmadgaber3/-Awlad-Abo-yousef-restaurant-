@@ -152,15 +152,29 @@
         .food-name { font-weight: 700; font-size: 1.02rem; color: var(--main-text); display: block; }
         .food-desc { font-size: 0.78rem; color: var(--desc-text); line-height: 1.4; margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         
-        .size-selector { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 2px 0; }
+        .size-selector { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 4px 0; }
+        
+        /* تعديل أزرار الأحجام: تصغير الحجم وتغميق اللون غير المحدد بطلبك */
         .size-option { 
-            font-size: 0.78rem; font-weight: 700; padding: 5px 10px; 
-            border-radius: 8px; background: rgba(140,98,57,0.05); cursor: pointer; 
-            border: 1px solid transparent; color: var(--main-text);
+            font-size: 0.72rem; /* تصغير حجم الخط */
+            font-weight: 700; 
+            padding: 3px 8px; /* تصغير المساحة الداخلية الكلية للزر */
+            border-radius: 7px; 
+            background: #e2dacb; /* تغميق لون الخلفية لتبان بوضوح فوق الكارت */
+            cursor: pointer; 
+            border: 1px solid transparent; 
+            color: #4a3525; /* تغميق لون خط الكلام غير المحدد */
+            transition: all 0.2s ease;
         }
-        body.dark-mode .size-option { background: rgba(255,255,255,0.07); }
+        body.dark-mode .size-option { 
+            background: #4a3525; 
+            color: #f5efe6;
+        }
+        /* اللون عند الاختيار يظل ثابت وواضح */
         .size-option.selected { 
-            background: var(--accent); color: #f5efe6; border-color: var(--accent); 
+            background: var(--accent); 
+            color: #f5efe6; 
+            border-color: var(--accent); 
             box-shadow: 0 2px 8px rgba(140, 98, 57, 0.2);
         }
 
@@ -196,9 +210,9 @@
             transition: all 0.7s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .restaurant-footer { padding: 30px 20px; text-align: center; background: var(--white); border-top: 1px solid rgba(140,98,57,0.05); margin-top: 30px; }
-        .footer-addresses { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 0.5px solid rgba(140,98,57,0.05); }
-        body.dark-mode .footer-addresses { border-bottom-color: rgba(255,255,255,0.05); }
+        .restaurant-footer { padding: 30px 20px; text-align: center; background: var(--white); border-top: 1px solid rgba(140, 98, 57, 0.05); margin-top: 30px; }
+        .footer-addresses { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 0.5px solid rgba(140, 98, 57, 0.05); }
+        body.dark-mode .footer-addresses { border-bottom-color: rgba(255, 255, 255, 0.05); }
         .footer-brand-addr { font-size: 0.68rem; color: var(--desc-text); font-weight: 700; }
         
         .delivery-box {
@@ -230,8 +244,8 @@
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; justify-content: center; align-items: flex-end; backdrop-filter: blur(4px); }
         .modal-content { background: var(--white); width: 100%; max-width: 500px; padding: 25px; border-radius: 30px 30px 0 0; max-height: 85vh; overflow-y: auto; color: var(--main-text); box-shadow: 0 -5px 25px rgba(0,0,0,0.1); }
         
-        .cart-item-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(140,98,57,0.03); border-radius: 18px; margin-bottom: 10px; }
-        body.dark-mode .cart-item-card { background: rgba(255,255,255,0.03); }
+        .cart-item-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(140, 98, 57, 0.03); border-radius: 18px; margin-bottom: 10px; }
+        body.dark-mode .cart-item-card { background: rgba(255, 255, 255, 0.03); }
         .cart-item-img { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; }
         .cart-item-info { flex: 1; }
         .cart-item-name { font-weight: 700; font-size: 0.95rem; color: var(--main-text); }
@@ -249,7 +263,7 @@
         #uAddrContainer.hidden { max-height: 0; opacity: 0; margin-bottom: 0; pointer-events: none; }
 
         .submit-btn { background: var(--accent); color: #f5efe6; border: none; padding: 16px; border-radius: 18px; width: 100%; font-weight: 800; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(140, 98, 57, 0.2); }
-    </style> <!-- تم تصليح قفلة الـ style هنا بالملي -->
+    </style>
 </head>
 <body>
 
@@ -298,7 +312,6 @@
             <a href="https://www.facebook.com/share/1EXTs3gXqC/" target="_blank" class="social-icon icon-facebook" aria-label="فيسبوك أبو يوسف">
                 <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             </a>
-            <!-- تم ضبط رسمة الـ SVG الرسمية والنظيفة للواتساب هنا بدون أي عك -->
             <a href="https://wa.me/201131324410" target="_blank" class="social-icon icon-whatsapp" aria-label="واتساب أبو يوسف">
                 <svg viewBox="0 0 24 24">
                     <path d="M12.004 2C6.48 2 2 6.48 2 12c0 2.17.6 4.2 1.63 5.95L2 22l4.22-1.1c1.67.92 3.58 1.4 5.58 1.4 5.52 0 10-4.48 10-10S17.52 2 12.004 2zm5.72 14.52c-.24.68-1.2 1.24-1.93 1.33-.67.09-1.53.13-4.96-1.42-4.38-1.97-7.12-6.42-7.34-6.71-.22-.29-1.85-2.46-1.85-4.69s1.16-3.32 1.57-3.78c.41-.46.9-.57 1.2-.57.23 0 .46.01.66.02.3.01.7.04 1.01.77.31.74 1.07 2.58 1.16 2.77.09.19.15.41.03.62s-.25.34-.49.63c-.24.28-.51.58-.22 1.09.29.51 1.3 2.14 2.79 3.44 1.92 1.69 3.54 2.21 4.05 2.43.51.22.8-.2.11-.9-.25-.29-1.01-1.18-1.29-1.59-.28-.41-.56-.34-.94-.2s-2.39 1.13-2.5 1.24c-.11.11-.19.24-.23.35-.04.11-.23.68-.11 1.25.12.57.65 1.13 1.3 1.33.65.2 4.14-1.54 4.88-2.65.74-1.11.74-2.07.52-2.25-.22-.22-.74-.35-1.16-.54z"/>
@@ -306,7 +319,6 @@
             </a>
         </div>
 
-        <!-- تم إرجاع سطر الحقوق الأصلي النظيف للمهندس أحمد وتثبيته في سطر واحد بدون تداخل بالملي -->
         <p class="footer-rights">جميع الحقوق محفوظة لـ مطعم وجزارة أبو يوسف 2026 ©</p>
         <div class="dev-credit">
             Designed by eng / Ahmed Gaber shehata
@@ -409,9 +421,15 @@
                         return { 
                             id: idx, category: col[0] || "أخرى", name: name, 
                             prices: {
-                                "L": col[3] || "", "M": col[4] || "", "S": col[5] || "",       
-                                "كيلو": col[6] || "", "3/4 كيلو": col[7] || "", "نص كيلو": col[8] || "",  
-                                "ثلت كيلو": col[9] || "", "ربع كيلو": col[10] || "", "عادي": col[12] || ""    
+                                "كبير": col[3] || "", 
+                                "وسط": col[4] || "", 
+                                "صغير": col[5] || "",       
+                                "كيلو": col[6] || "", 
+                                "3/4 كيلو": col[7] || "", 
+                                "نص كيلو": col[8] || "",  
+                                "ثلت كيلو": col[9] || "", 
+                                "ربع كيلو": col[10] || "", 
+                                "عادي": col[12] || ""    
                             }, desc: col[2] || ""           
                         };
                     }).filter(Boolean);

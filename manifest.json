@@ -1,9 +1,9 @@
 {
   "name": "مطعم أبو يوسف",
   "short_name": "أبو يوسف",
-  "description": "المنيو الرسمي لمطعم وجزارة أبو يوسف",
   "start_url": "/",
-  "display": "standalone",
+  "display": "fullscreen",
+  "orientation": "portrait",
   "background_color": "#f5efe6",
   "theme_color": "#8c6239",
   "icons": [

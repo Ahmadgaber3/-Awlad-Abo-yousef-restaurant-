@@ -23,10 +23,8 @@
         .loader-content { text-align: center; padding: 20px; display: flex; flex-direction: column; align-items: center; margin-top: 30px; }
         .loader-logo-big { width: 220px; height: auto; border-radius: 0; margin-bottom: 5px; animation: pulse 1.5s infinite ease-in-out; object-fit: contain; }
         
-        /* تعديل النص واللوجو الصغير */
-        .slogan-container { display: flex; align-items: center; gap: 5px; justify-content: center; margin-top: 5px; }
-        .loader-slogan { font-size: 0.85rem; color: #8c6239; font-weight: 800; } 
-        .loader-icon { width: 20px; height: 20px; object-fit: contain; }
+        /* النص مع الإيموجي */
+        .loader-slogan { font-size: 0.9rem; color: #8c6239; font-weight: 800; margin-top: 5px; } 
         
         .loader-counter { font-size: 1.3rem; font-weight: 800; color: var(--accent); margin-top: 15px; }
         .loading-bar { width: 180px; height: 5px; background: rgba(140, 98, 57, 0.1); margin: 15px auto; border-radius: 10px; overflow: hidden; }
@@ -112,10 +110,7 @@
     <div id="splash-screen">
         <div class="loader-content">
             <img src="./images/logooo.jpg" class="loader-logo-big" alt="أبو يوسف">
-            <div class="slogan-container">
-                <img src="./images/meat-icon.png" class="loader-icon" alt="ايقونة لحمة">
-                <p class="loader-slogan">تأسس منذ 1990</p>
-            </div>
+            <p class="loader-slogan">تأسس منذ 1990 🥩</p>
             <div class="loader-counter" id="loadCounter">0%</div>
             <div class="loading-bar"><span id="loadProgress"></span></div>
         </div>

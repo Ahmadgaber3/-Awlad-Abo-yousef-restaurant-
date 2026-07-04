@@ -6,6 +6,8 @@
   "orientation": "portrait",
   "background_color": "#faf7f2",
   "theme_color": "#8c6239",
+  "installable": true,
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "./images/logooo.jpg",

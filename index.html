@@ -2,13 +2,16 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>أبو يوسف | المنيو الرسمي</title>
+    
+    <!-- PWA & Apple Support -->
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="أبو يوسف">
-    <link class="apple-touch-icon" href="images/logooo.jpg">
+    <link rel="apple-touch-icon" href="images/logooo.jpg">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -92,11 +95,9 @@
         .dev-credit { font-size: 0.85rem; color: var(--desc-text); font-weight: 700; }
         .dev-credit a { color: var(--main-text); text-decoration: none; display: block; margin-top: 3px; }
 
-        /* سلة الطلبات الأصلية */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; justify-content: center; align-items: flex-end; backdrop-filter: blur(4px); }
         .modal-content { background: var(--white); width: 100%; max-width: 500px; padding: 25px; border-radius: 30px 30px 0 0; max-height: 85vh; overflow-y: auto; color: var(--main-text); box-shadow: 0 -5px 25px rgba(0,0,0,0.1); }
         .cart-item-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(140, 98, 57, 0.03); border-radius: 18px; margin-bottom: 10px; }
-        /* صورة السلة صغيرة كما طلبت */
         .cart-item-img { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
         .cart-item-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
         .cart-item-name { font-weight: 700; font-size: 0.95rem; }
@@ -190,6 +191,33 @@
     </div>
 
     <script>
+        // PWA Update & Install logic
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    reg.onupdatefound = () => {
+                        const installingWorker = reg.installing;
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                window.location.reload();
+                            }
+                        };
+                    };
+                });
+            });
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.createElement('button');
+            installBtn.innerHTML = '📱 تثبيت تطبيق أبو يوسف';
+            installBtn.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#8c6239; color:#faf7f2; border:none; padding:15px 30px; border-radius:50px; font-weight:800; z-index:9999; box-shadow:0 4px 15px rgba(0,0,0,0.3);';
+            document.body.appendChild(installBtn);
+            installBtn.onclick = () => { deferredPrompt.prompt(); deferredPrompt = null; installBtn.remove(); };
+        });
+
         const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRKWuP6W5C7QsU6-Al5LyNyeett9cP3-UIbi9_mG7hmMoZCaJrdAFQ8lz5stI8Zb24YR4M4spuS_WCK/pub?output=csv';
         const IMAGES_PATH = "./images/"; 
         let menuData = [], cart = [];
@@ -198,12 +226,7 @@
 
         function preloadAllImages() {
             const imagesToLoad = menuData.map(item => `${IMAGES_PATH}${item.name}.jpg`);
-            return Promise.all(imagesToLoad.map(src => new Promise(res => { 
-                const img = new Image(); 
-                img.src = src; 
-                img.onload = res; 
-                img.onerror = res; 
-            })));
+            return Promise.all(imagesToLoad.map(src => new Promise(res => { const img = new Image(); img.src = src; img.onload = res; img.onerror = res; })));
         }
 
         function toggleTheme() {
@@ -349,20 +372,12 @@
         function triggerAddToCart(e, btn, name) {
             const size = btn.getAttribute('data-size') || "عادي"; const price = btn.getAttribute('data-price') || "0"; const img = `${IMAGES_PATH}${name}.jpg`;
             cart.push({name, price, size, img});
-            
             const notice = btn.previousElementSibling;
-            if(notice) {
-                notice.classList.add('show');
-                setTimeout(() => notice.classList.remove('show'), 1500);
-            }
-
+            if(notice) { notice.classList.add('show'); setTimeout(() => notice.classList.remove('show'), 1500); }
             const fly = document.createElement('div'); fly.className = 'fly-item'; fly.innerHTML = '🥩'; 
             fly.style.left = e.clientX + 'px'; fly.style.top = e.clientY + 'px'; document.body.appendChild(fly);
             const cartBtn = document.getElementById('cartBtn');
-            if(cartBtn) {
-                const cartPos = cartBtn.getBoundingClientRect();
-                setTimeout(() => { fly.style.left = (cartPos.left + 15) + 'px'; fly.style.top = (cartPos.top + 15) + 'px'; fly.style.transform = 'scale(0.1) rotate(360deg)'; fly.style.opacity = '0'; }, 20);
-            }
+            if(cartBtn) { const cartPos = cartBtn.getBoundingClientRect(); setTimeout(() => { fly.style.left = (cartPos.left + 15) + 'px'; fly.style.top = (cartPos.top + 15) + 'px'; fly.style.transform = 'scale(0.1) rotate(360deg)'; fly.style.opacity = '0'; }, 20); }
             setTimeout(() => { fly.remove(); updateCart(); if(cartBtn) { cartBtn.classList.add('shake'); setTimeout(() => cartBtn.classList.remove('shake'), 500); } }, 700);
         }
 
@@ -384,19 +399,10 @@
             const n = document.getElementById('uName').value.trim();
             const p = document.getElementById('uPhone').value.trim();
             const a = document.getElementById('uAddr').value.trim();
-            
-            if(!n || !p || (currentOrderType === 'delivery' && !a) || cart.length === 0) {
-                return alert("يرجى ملء جميع الحقول المطلوبة واختيار الأصناف لتأكيد طلبك.");
-            }
-            
+            if(!n || !p || (currentOrderType === 'delivery' && !a) || cart.length === 0) { return alert("يرجى ملء جميع الحقول المطلوبة واختيار الأصناف لتأكيد طلبك."); }
             let msg = `*طلب جديد - مطعم وجزارة أبو يوسف*\n──────────────\n👤 *الاسم:* ${n}\n📱 *الموبايل:* ${p}\n`;
-            
-            if(currentOrderType === 'delivery') {
-                msg += `📍 *نوع الطلب:* دليفري 🛵\n🏠 *العنوان:* ${a}\n`;
-            } else {
-                msg += `📍 *نوع الطلب:* تيك أواي 🛍️ (الاستلام من المطعم)\n`;
-            }
-            
+            if(currentOrderType === 'delivery') msg += `📍 *نوع الطلب:* دليفري 🛵\n🏠 *العنوان:* ${a}\n`;
+            else msg += `📍 *نوع الطلب:* تيك أواي 🛍️ (الاستلام من المطعم)\n`;
             msg += `──────────────\n📦 *الطلبات:*\n`;
             const summary = {}; cart.forEach(item => { const key = `${item.name} (${item.size})`; summary[key] = (summary[key] || 0) + 1; });
             for (const [itemKey, qty] of Object.entries(summary)) { msg += `• ${itemKey} × ${qty}\n`; }
@@ -404,51 +410,6 @@
             window.open(`https://wa.me/201131324410?text=${encodeURIComponent(msg)}`, '_blank');
         }
         document.addEventListener("DOMContentLoaded", () => loadMenu());
-
-        // ==========================================
-        //  إضافة كود الـ Service Worker وبانر التثبيت الذكي
-        // ==========================================
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('تم تسجيل السيرفيس وركر بنجاح!'))
-                    .catch(err => console.error('فشل التسجيل:', err));
-            });
-        }
-
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            const installBtn = document.createElement('button');
-            installBtn.innerHTML = '📱 تثبيت تطبيق أبو يوسف';
-            installBtn.style.cssText = `
-                position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-                background: #8c6239; color: #faf7f2; border: none; padding: 12px 24px;
-                border-radius: 50px; font-weight: 800; font-size: 0.95rem; z-index: 9999;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; direction: rtl;
-                transition: transform 0.2s ease;
-            `;
-            document.body.appendChild(installBtn);
-
-            installBtn.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        console.log('الزبون وافق على تثبيت التطبيق 🎉');
-                        installBtn.remove();
-                    }
-                    deferredPrompt = null;
-                }
-            });
-        });
-
-        window.addEventListener('appinstalled', () => {
-            console.log('تم التثبيت بنجاح على الجهاز');
-            deferredPrompt = null;
-        });
     </script>
 </body>
 </html>

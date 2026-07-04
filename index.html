@@ -38,13 +38,11 @@
         .theme-toggle { right: 15px; }
         .cart-trigger-container { position: absolute; left: 15px; top: 10px; }
         .cart-trigger { left: 0; top: 0; position: relative; }
-        /* استعادة حركة الاهتزاز */
         .cart-trigger.shake { animation: cartShake 0.5s ease-in-out; }
         @keyframes cartShake { 0%, 100% { transform: scale(1) rotate(0deg); } 20%, 60% { transform: scale(1.1) rotate(-10deg); } 40%, 80% { transform: scale(1.1) rotate(10deg); } }
         .badge { position: absolute; top: -5px; right: -5px; background: var(--accent); color: #f5efe6; font-size: 10px; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--brand-black); transform: scale(0); transition: transform 0.3s ease; }
         .badge.show { transform: scale(1); }
 
-        /* الأقسام مكبرة */
         .category-nav { display: flex; overflow-x: auto; white-space: nowrap; padding: 12px 15px; gap: 15px; scrollbar-width: none; background: var(--glass); backdrop-filter: blur(20px); border-top: 0.5px solid rgba(140,98,57,0.08); border-bottom: 0.5px solid rgba(140,98,57,0.08); }
         .category-nav::-webkit-scrollbar { display: none; }
         .cat-item { display: flex; flex-direction: column; align-items: center; min-width: 85px; cursor: pointer; }
@@ -94,10 +92,13 @@
         .dev-credit { font-size: 0.85rem; color: var(--desc-text); font-weight: 700; }
         .dev-credit a { color: var(--main-text); text-decoration: none; display: block; margin-top: 3px; }
 
-        /* إتمام الطلب مريح للعين */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; justify-content: center; align-items: flex-end; backdrop-filter: blur(4px); }
         .modal-content { background: var(--white); width: 100%; max-width: 500px; padding: 25px; border-radius: 30px 30px 0 0; max-height: 85vh; overflow-y: auto; color: var(--main-text); box-shadow: 0 -5px 25px rgba(0,0,0,0.1); }
+        
+        /* هنا التعديل الوحيد: تصغير صورة السلة */
         .cart-item-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(140, 98, 57, 0.03); border-radius: 18px; margin-bottom: 10px; }
+        .cart-item-img { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
+        
         .order-type-selector { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; }
         .type-btn { flex: 1; padding: 12px; border-radius: 14px; background: var(--bg); color: var(--main-text); border: 1.5px solid transparent; font-weight: 700; font-size: 0.9rem; cursor: pointer; text-align: center; }
         .type-btn.active { background: var(--accent); color: #f5efe6; box-shadow: 0 3px 8px rgba(140, 98, 57, 0.15); }

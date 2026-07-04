@@ -1,38 +1,22 @@
-{
-  "id": "/index.html",
-  "scope": "/",
-  "name": "مطعم وجزارة أبو يوسف",
-  "short_name": "أبو يوسف",
-  "description": "المنيو الرسمي لمطعم وجزارة أبو يوسف - تأسس منذ 1990",
-  "start_url": "./index.html?utm_source=pwa",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#faf7f2",
-  "theme_color": "#8c6239",
-  "icons": [
-    {
-      "src": "images/logo192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "images/logo192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "images/logo512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "images/logo512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ]
-}
+const CACHE_NAME = 'abu-youssef-v1';
+const ASSETS = [
+  '/',
+  '/index.html',
+  './images/logooo.jpg'
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS);
+    })
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});

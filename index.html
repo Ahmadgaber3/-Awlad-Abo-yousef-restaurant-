@@ -404,6 +404,51 @@
             window.open(`https://wa.me/201131324410?text=${encodeURIComponent(msg)}`, '_blank');
         }
         document.addEventListener("DOMContentLoaded", () => loadMenu());
+
+        // ==========================================
+        //  إضافة كود الـ Service Worker وبانر التثبيت الذكي
+        // ==========================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('تم تسجيل السيرفيس وركر بنجاح!'))
+                    .catch(err => console.error('فشل التسجيل:', err));
+            });
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            const installBtn = document.createElement('button');
+            installBtn.innerHTML = '📱 تثبيت تطبيق أبو يوسف';
+            installBtn.style.cssText = `
+                position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+                background: #8c6239; color: #faf7f2; border: none; padding: 12px 24px;
+                border-radius: 50px; font-weight: 800; font-size: 0.95rem; z-index: 9999;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; direction: rtl;
+                transition: transform 0.2s ease;
+            `;
+            document.body.appendChild(installBtn);
+
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        console.log('الزبون وافق على تثبيت التطبيق 🎉');
+                        installBtn.remove();
+                    }
+                    deferredPrompt = null;
+                }
+            });
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('تم التثبيت بنجاح على الجهاز');
+            deferredPrompt = null;
+        });
     </script>
 </body>
 </html>

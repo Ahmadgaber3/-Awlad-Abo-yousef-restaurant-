@@ -1,63 +1,38 @@
-const CACHE_NAME = 'aboyousef-menu-v2026';
-const ASSETS_TO_CACHE = [
-  '/',
-  './index.html',
-  './manifest.json',
-  './images/logooo.jpg'
-];
-
-// تفعيل السيرفيس وركر وتخزين الملفات الأساسية مبدئياً
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
-  // 🔥 إجبار التحديث الجديد على التنشيط فوراً بدون انتظار إغلاق التاب
-  self.skipWaiting();
-});
-
-// تنظيف الكاش القديم تماماً بمجرد نزول أي تحديث جديد على السيرفر
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            console.log('تم تدمير كاش منيو أبو يوسف القديم بنجاح:', cache);
-            return caches.delete(cache);
-          }
-        })
-      );
-    }).then(() => {
-      // 🔥 السيطرة الفورية على جميع صفحات الزباين المفتوحة حالا وتحديثها
-      return self.clients.claim();
-    })
-  );
-});
-
-// استراتيجية جلب البيانات (الشبكة أولاً، ولو مفيش إنترنت يفتح من الكاش)
-self.addEventListener('fetch', (event) => {
-  // استثناء روابط الجوجل شيت لقرائة الأسعار والوجبات الجديدة فوراً من السيرفر دون كاش
-  if (event.request.url.includes('docs.google.com') || event.request.url.includes('t=')) {
-    return event.respondWith(fetch(event.request));
-  }
-
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // لو الشبكة تمام، نحدث الكاش بالنسخة الأحدث ونرجع الملف للزبون
-        if (response && response.status === 200 && response.type === 'basic') {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
-        return response;
-      })
-      .catch(() => {
-        // لو مفيش إنترنت نهائياً عند الزبون، يفتح من الكاش المتخزن على موبايله
-        return caches.match(event.request);
-      })
-  );
-});
+{
+  "id": "/index.html",
+  "scope": "/",
+  "name": "مطعم وجزارة أبو يوسف",
+  "short_name": "أبو يوسف",
+  "description": "المنيو الرسمي لمطعم وجزارة أبو يوسف - تأسس منذ 1990",
+  "start_url": "./index.html?utm_source=pwa",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf7f2",
+  "theme_color": "#8c6239",
+  "icons": [
+    {
+      "src": "images/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "images/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

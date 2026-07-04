@@ -1,0 +1,23 @@
+{
+  "name": "مطعم وجزارة أبو يوسف",
+  "short_name": "أبو يوسف",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#faf7f2",
+  "theme_color": "#8c6239",
+  "icons": [
+    {
+      "src": "./images/logooo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "./images/logooo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
